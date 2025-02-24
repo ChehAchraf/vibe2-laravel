@@ -1,7 +1,10 @@
 <?php
 
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use App\Http\Controllers\HomeController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,11 +16,38 @@ use App\Http\Controllers\AuthController;
 |
 */
 
-// the login 
+// the login
 
-Route::get('login', [AuthController::class , 'login'])->name('login.form');
-Route::get('register',[AuthController::class , 'register'])->name('register.form');
+Route::get('login', [AuthController::class , 'index'])->name('login.form');
+Route::get('register', [AuthController::class , 'create'])->name('register.form');
+Route::post("/login/proccess",[AuthController::class , 'DoLogin'])->name('login.proccess');
 
+
+// the user route lists
 Route::prefix('user')->group(function () {
-    Route::get('profile', fn()=>"hi");
+    Route::post("create", [AuthController::class , 'store'])->name('create.user');
+    Route::get('profile', [HomeController::class,'ShowProfile']);
+    Route::get("/profile/edit" , [AuthController::class , "edit"])->middleware(['auth','verified'])->name('show.edit.form');
 });
+
+// edit profile data
+Route::patch('/user/profile/edit-start',[AuthController::class , 'update'])->middleware(['auth','verified'])->name('edit.profile');;
+
+// for the home
+Route::get('/home', [HomeController::class , 'index'])->middleware(['auth','verified']);
+
+// for the verification
+
+Route::get("/email/verify",function(){
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
+
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill(); //
+    return redirect('/home'); //
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('/email/resend', function (Illuminate\Http\Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('message', 'Verification email resent!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.resend');
