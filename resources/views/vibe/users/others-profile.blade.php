@@ -146,12 +146,7 @@
 
                         <!-- Interaction Buttons -->
                         <div class="flex items-center justify-between mt-4 pt-4 border-t">
-                            <button class="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded flex-1 justify-center">
-                                <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
-                                </svg>
-                                <span>Like</span>
-                            </button>
+                            @include('components.like-button', ['post' => $post, 'likes_count' => $post->likes()->count()])
                             <button class="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded flex-1 justify-center">
                                 <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>

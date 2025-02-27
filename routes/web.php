@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\FriendresquestController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\LikeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,3 +63,6 @@ Route::post('/email/resend', function (Illuminate\Http\Request $request) {
 
 // the friend request
 Route::post('/friend/request/{id}', [FriendresquestController::class , 'store'])->name('friend.request');
+
+// like button
+Route::post('/like/{post}', [LikeController::class, 'toggleLike'])->name('like.toggle');
