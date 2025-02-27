@@ -5,6 +5,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\FriendresquestController;
+use App\Http\Controllers\PostController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,16 +21,21 @@ use App\Http\Controllers\HomeController;
 
 // the login
 
-Route::get('login', [AuthController::class , 'index'])->name('login.form');
+Route::get('/login', [AuthController::class , 'index'])->name('login.form');
 Route::get('register', [AuthController::class , 'create'])->name('register.form');
 Route::post("/login/proccess",[AuthController::class , 'DoLogin'])->name('login.proccess');
-
+// the logout
+Route::post('/logout', [AuthController::class , 'logout'])->name('logout');
+// submit the post
+Route::post('/post/add', [PostController::class,'store'])->middleware(['auth','verified'])->name('post.add');
+Route::get('/posts/load-more', [PostController::class, 'loadMore'])->name('posts.loadMore');
 
 // the user route lists
 Route::prefix('user')->group(function () {
     Route::post("create", [AuthController::class , 'store'])->name('create.user');
-    Route::get('profile', [HomeController::class,'ShowProfile']);
+    Route::get('profile', [HomeController::class,'ShowProfile'])->name('profile.show');
     Route::get("/profile/edit" , [AuthController::class , "edit"])->middleware(['auth','verified'])->name('show.edit.form');
+    Route::get('/profile/show/{id}', [AuthController::class , 'show'])->middleware(['auth','verified'])->name('others.profile');
 });
 
 // edit profile data
@@ -51,3 +59,6 @@ Route::post('/email/resend', function (Illuminate\Http\Request $request) {
     $request->user()->sendEmailVerificationNotification();
     return back()->with('message', 'Verification email resent!');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.resend');
+
+// the friend request
+Route::post('/friend/request/{id}', [FriendresquestController::class , 'store'])->name('friend.request');

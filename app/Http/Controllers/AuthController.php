@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
@@ -63,7 +65,7 @@ class AuthController extends Controller
                 ]);
         event(new Registered($user));
         // ndir lih return
-        return redirect('/login')->with('success' , 'Registration successful! Please log in.');
+        return redirect('login')->with('success' , 'Registration successful! Please log in.');
     }
 
     /**
@@ -74,7 +76,8 @@ class AuthController extends Controller
      */
     public function show($id)
     {
-        //
+        $user = User::findOrFail($id);
+        return view('vibe.users.others-profile' , compact('user'));
     }
 
     /**
@@ -87,6 +90,7 @@ class AuthController extends Controller
     {
         $userId = Auth()->id();
         $user = User::findOrFail($userId);
+//        dd($user);
         return view('vibe.users.edit-profile', compact('user'));
     }
 
@@ -97,9 +101,46 @@ class AuthController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        dump($request->all());
+        $request->validate([
+            'name' => 'nullable|string|max:255',
+            'nickname' => 'nullable|string|max:255|unique:users,nickname,' . Auth::id(),
+            'email' => 'nullable|email|max:255|unique:users,email,' . Auth::id(),
+            'bio' => 'nullable|string|max:500',
+            'gender' => 'nullable|in:male,female,custom',
+            'password' => 'nullable|min:8|confirmed',
+            'profile_photo' => 'nullable|image|mimes:jpg,png,jpeg,gif|max:8048',
+        ]);
+        $user = Auth::user();
+        if ($request->filled('name')) {
+            $user->name = $request->name;
+        }
+        if ($request->filled('nickname')) {
+            $user->nickname = $request->nickname;
+        }
+        if ($request->filled('email')) {
+            $user->email = $request->email;
+        }
+        if ($request->filled('bio')) {
+            $user->bio = $request->bio;
+        }
+        if ($request->filled('gender')) {
+            $user->gender = $request->gender;
+        }
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+        if ($request->hasFile('profile_photo')) {
+            if ($user->profile_photo) {
+                Storage::delete($user->profile_photo);
+            }
+            $path = $request->file('profile_photo')->store('profile_photos', 'public');
+            $user->profile_photo = $path;
+        }
+        $user->save();
+        return redirect()->back()->with('success', 'Profile updated successfully!');
     }
 
     /**
@@ -111,5 +152,11 @@ class AuthController extends Controller
     public function destroy($id)
     {
         //
+    }
+    public function logout()
+    {
+        Session::flush();
+        Auth::logout();
+        return redirect('/login')->with('success', 'You have been logged out successfully.');
     }
 }

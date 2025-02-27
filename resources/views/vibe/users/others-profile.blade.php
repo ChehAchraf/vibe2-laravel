@@ -5,39 +5,38 @@
     <!-- Cover Photo -->
     <div class="h-96 w-full overflow-hidden">
         <img src="{{ asset('storage/' . $user->profile_photo) }}" alt="Cover Photo" class="w-full object-cover h-full">
-        <button class="absolute bottom-5 right-5 bg-white px-4 py-2 rounded-lg shadow hover:bg-gray-50">
-                <span class="flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    </svg>
-                    Edit Cover Photo
-                </span>
-        </button>
     </div>
 
     <!-- Profile Info -->
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="-mt-24 sm:-mt-32 sm:flex sm:items-end sm:space-x-5">
-            <div class="relative group">
+            <div class="relative">
                 <img class="h-48 w-48 rounded-full ring-4 ring-white object-cover" src="{{ asset('storage/' . $user->profile_photo) }}" alt="Profile Picture">
-                <button class="absolute bottom-2 right-2 bg-gray-800 p-2 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    </svg>
-                </button>
             </div>
             <div class="mt-6 sm:flex-1 sm:min-w-0 sm:flex sm:items-center sm:justify-end sm:space-x-6 sm:pb-1">
                 <div class="sm:hidden md:block mt-6 min-w-0 flex-1">
                     <h1 class="text-2xl font-bold text-gray-900 truncate">{{$user->name}}</h1>
                     <p class="text-gray-500">1.2K Friends</p>
                 </div>
-                <div class="mt-6 flex flex-col justify-stretch space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4">
-                    <a href="{{route('show.edit.form')}}" class="inline-flex justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                        Edit Profile
-                    </a>
-                </div>
+                @if ($user->id !== auth()->user()->id)
+                <form action="{{ route('friend.request', $user->id) }}" method="POST">
+                    @csrf
+                    <div class="mt-6 flex flex-col justify-stretch space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4">
+                        @if ($user->isFriendWith(auth()->user()))
+                        <button  class="inline-flex justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                            Remove Friend
+                        </button>
+                        @else
+                        <button  class="inline-flex justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                            Add Friend
+                        </button>
+                        @endif
+                        <button class="inline-flex justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                            Message
+                        </button>
+                    </div>
+                </form>
+                @endif
             </div>
         </div>
     </div>
@@ -61,14 +60,6 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Left Sidebar -->
         <div class="lg:col-span-1">
-            <div class="bg-white rounded-lg shadow mb-6">
-                <div class="p-4">
-                    <h2 class="text-xl font-bold mb-4">Bio</h2>
-                    <p>
-                        {{$user->bio}}
-                    </p>
-                </div>
-            </div>
             <!-- Intro Card -->
             <div class="bg-white rounded-lg shadow mb-6">
                 <div class="p-4">
@@ -94,9 +85,6 @@
                             <span>Lives in New York</span>
                         </div>
                     </div>
-                    <button class="w-full mt-4 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded">
-                        Edit Details
-                    </button>
                 </div>
             </div>
 
@@ -121,45 +109,13 @@
 
         <!-- Main Content Area -->
         <div class="lg:col-span-2">
-            <!-- Create Post -->
-            <div class="bg-white rounded-lg shadow mb-6">
-                <div class="p-4">
-                    <div class="flex items-center space-x-4">
-                        <img src="{{ asset('storage/' . $user->profile_photo) }}" class="w-10 h-10 rounded-full">
-                        <input type="text" placeholder="What's on your mind?" class="bg-gray-100 rounded-full py-2 px-4 w-full">
-                    </div>
-                    <div class="border-t mt-4 pt-4">
-                        <div class="flex justify-between">
-                            <button class="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded">
-                                <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                                </svg>
-                                <span>Live Video</span>
-                            </button>
-                            <button class="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded">
-                                <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                </svg>
-                                <span>Photo/Video</span>
-                            </button>
-                            <button class="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded">
-                                <svg class="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                                <span>Feeling/Activity</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Posts -->
             <div class="space-y-6">
                 <!-- Sample Post -->
                 <div class="bg-white rounded-lg shadow">
                     <div class="p-4">
                         <div class="flex items-center space-x-4">
-                            <img src="{{ asset('storage/' . $user->profile_photo) }}" class="w-10 h-10 rounded-full">
+                            <img src="https://via.placeholder.com/40" class="w-10 h-10 rounded-full">
                             <div>
                                 <h3 class="font-semibold">John Doe</h3>
                                 <p class="text-gray-500 text-sm">2 hours ago · <svg class="w-4 h-4 inline" fill="currentColor" viewBox="0 0 20 20">
@@ -174,14 +130,14 @@
                         <!-- Interaction Stats -->
                         <div class="flex items-center justify-between mt-4 text-gray-500 text-sm">
                             <div class="flex items-center">
-                                    <span class="flex items-center">
-                                        <span class="bg-blue-500 p-1 rounded-full">
-                                            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"/>
-                                            </svg>
-                                        </span>
-                                        <span class="ml-2">142 Likes</span>
+                                <span class="flex items-center">
+                                    <span class="bg-blue-500 p-1 rounded-full">
+                                        <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"/>
+                                        </svg>
                                     </span>
+                                    <span class="ml-2">142 Likes</span>
+                                </span>
                             </div>
                             <div>
                                 <span>24 Comments · 4 Shares</span>

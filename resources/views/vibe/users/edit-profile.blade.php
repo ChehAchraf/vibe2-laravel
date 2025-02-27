@@ -5,13 +5,20 @@
             <div class="p-8">
                 <h2 class="text-2xl font-bold text-gray-900 mb-8">Edit Profile</h2>
 
-                <form class="space-y-6" action="#" method="POST">
+                <form class="space-y-6" action="{{route('edit.profile')}}" method="POST" enctype="multipart/form-data">
+                    @if(session('success'))
+                        <div class="bg-green-600 text-white p-4 rounded-xl text-center">
+                            {{session('success')}}
+                        </div>
+                    @endif
+                    @csrf
+                    @method('PATCH')
                     <!-- Profile Photo -->
                     <div class="space-y-2">
                         <label class="block text-sm font-medium text-gray-700">Profile Photo</label>
                         <div class="flex items-center space-x-6">
                             <div class="relative">
-                                <img src="https://via.placeholder.com/100"
+                                <img src="{{ asset('storage/' . $user->profile_photo) }}"
                                      alt="Current profile photo"
                                      class="w-24 h-24 rounded-full object-cover">
                                 <button type="button"
@@ -23,10 +30,14 @@
                                               d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
                                     </svg>
                                 </button>
+                                @error('profile_photo')
+                                    <p class="text-red-500 text-xs">{{$message}}</p>
+                                @enderror
                             </div>
                             <div class="flex-1">
                                 <input type="file"
                                        class="hidden"
+                                       name="profile_photo"
                                        id="profile_photo"
                                        accept="image/*">
                                 <label for="profile_photo"
@@ -48,6 +59,9 @@
                                name="name"
                                class="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                                value="{{$user->name}}">
+                        @error('name')
+                        <p class="text-red-500 text-xs">{{$message}}</p>
+                        @enderror
                     </div>
 
                     <!-- Nickname -->
@@ -57,6 +71,9 @@
                                name="nickname"
                                class="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                                value="{{$user->nickname}}">
+                        @error('nickname')
+                        <p class="text-red-500 text-xs">{{$message}}</p>
+                        @enderror
                     </div>
 
                     <!-- Email -->
@@ -67,6 +84,9 @@
                                name="email"
                                class="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                                value="{{$user->email}}">
+                        @error('email')
+                            <p class="text-red-500 text-xs">{{$message}}</p>
+                        @enderror
                     </div>
 
                     <!-- Bio -->
@@ -79,6 +99,9 @@
                             value="{{$user->bio}}"
                             placeholder="Write something about yourself..."></textarea>
                         <p class="text-xs text-gray-500">Brief description for your profile. URLs are hyperlinked.</p>
+                        @error('bio')
+                            <p class="text-red-500 text-xs">{{$message}}</p>
+                        @enderror
                     </div>
 
                     <!-- Gender -->
@@ -98,6 +121,9 @@
                                 <input type="radio" name="gender" value="custom" class="text-blue-600">
                             </div>
                         </div>
+                        @error('gender')
+                            <p class="text-red-500 text-xs">{{$message}}</p>
+                        @enderror
                     </div>
 
                     <!-- Password -->
@@ -112,6 +138,9 @@
                         <input type="password"
                                class="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                                placeholder="Confirm new password">
+                        @error('password')
+                            <p class="text-red-500 text-xs">{{$message}}</p>
+                        @enderror
                     </div>
 
                     <!-- Save Button -->
