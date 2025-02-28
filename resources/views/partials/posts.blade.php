@@ -32,7 +32,10 @@
 
                 <div class="flex items-center justify-between mt-4 pt-4 border-t">
                     @include('components.like-button', ['post' => $post, 'likes_count' => $post->likes()->count()])
-                    <button class="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded flex-1 justify-center">
+                    <button class="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded flex-1 justify-center"
+                            hx-get="{{ route('comments.show', $post->id) }}"
+                            hx-target="#comment-section-{{ $post->id }}"
+                            hx-swap="innerHTML">
                         <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
                         </svg>
@@ -46,6 +49,9 @@
                     </button>
                 </div>
             </div>
+
+            <!-- Comment Section Container -->
+            <div id="comment-section-{{ $post->id }}"></div>
         </div>
     </div>
 @endforeach

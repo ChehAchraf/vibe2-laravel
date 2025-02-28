@@ -8,6 +8,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\FriendresquestController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\LikeController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\FriendRequestController;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,7 +64,20 @@ Route::post('/email/resend', function (Illuminate\Http\Request $request) {
 })->middleware(['auth', 'throttle:6,1'])->name('verification.resend');
 
 // the friend request
-Route::post('/friend/request/{id}', [FriendresquestController::class , 'store'])->name('friend.request');
+Route::post('/friend/request/{user}', [FriendRequestController::class, 'store'])->name('friend.request');
+Route::post('/friend/request/accept/{id}', [FriendRequestController::class, 'accept'])->name('friend.request.accept');
+Route::post('/friend/request/decline/{id}', [FriendRequestController::class, 'decline'])->name('friend.request.decline');
 
 // like button
 Route::post('/like/{post}', [LikeController::class, 'toggleLike'])->name('like.toggle');
+
+// comment routes
+Route::get('/comments/{post}', [CommentController::class, 'show'])->name('comments.show');
+Route::post('/comments/{post}', [CommentController::class, 'store'])->name('comments.store');
+
+// Fallback route - redirect all unmatched routes to login
+Route::fallback(function () {
+    return redirect('/login');
+});
+
+Route::get('/friend-requests', [FriendRequestController::class, 'index'])->name('friend.requests');

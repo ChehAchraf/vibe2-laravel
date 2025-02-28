@@ -1,4 +1,5 @@
 @extends('layouts.app')
+
 <div class="container mx-auto pt-20 px-4">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <!-- القائمة الجانبية -->
@@ -23,10 +24,10 @@
             @endif
             <!-- إنشاء منشور -->
             <div class="bg-white rounded-lg shadow p-4 mb-4">
-                <form id="postForm" action="{{route('post.add')}}" method="post" enctype="multipart/form-data">
+                <form id="postForm" action="{{ route('post.add') }}" method="post" enctype="multipart/form-data">
                     @csrf
                     <div class="flex items-center space-x-4">
-                        <img src="{{asset('Storage/' . $user->profile_photo)}}" alt="صورة الملف الشخصي" class="w-10 h-10 rounded-full">
+                        <img src="{{ asset('Storage/' . $user->profile_photo) }}" alt="صورة الملف الشخصي" class="w-10 h-10 rounded-full">
                         <input name="content" type="text" placeholder="What's on your mind?" class="bg-gray-100 rounded-full py-2 px-4 w-full">
                     </div>
                     <div id="imagePreview" class="mt-4 hidden">
@@ -69,23 +70,21 @@
                 }
             </script>
             <!-- المنشورات -->
-                <div id="posts-container">
-                    @include('partials.posts', ['posts' => $posts])
-                </div>
-                <div class="text-center mt-4 mb-4 ">
-                    <button
-                        class="bg-blue-500 text-white py-2 px-4 rounded"
-                        hx-get="{{ route('posts.loadMore', ['offset' => count($posts)]) }}"
-                        hx-target="#posts-container"
-                        hx-swap="beforeend"
-                        hx-trigger="click"
-                        id="load-more-btn"
-                    >
-                        load more 😁
-                    </button>
-                </div>
-                </body>
-                </html>
+            <div id="posts-container">
+                @include('partials.posts', ['posts' => $friendsPosts])
+            </div>
+            <div class="text-center mt-4 mb-4">
+                <button
+                    class="bg-blue-500 text-white py-2 px-4 rounded"
+                    hx-get="{{ route('posts.loadMore', ['offset' => count($friendsPosts)]) }}"
+                    hx-target="#posts-container"
+                    hx-swap="beforeend"
+                    hx-trigger="click"
+                    id="load-more-btn"
+                >
+                    Load More 😁
+                </button>
+            </div>
         </div>
     </div>
 </div>

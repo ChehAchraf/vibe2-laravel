@@ -10,9 +10,12 @@ use App\Models\Post;
 class HomeController extends Controller
 {
     public function index() {
-        $user = User::findOrFail(Auth::id());
-        $posts = Post::with('user')->latest()->take(1)->get();
-        return view('vibe.home', compact('posts','user'));
+        $user = auth()->user();
+        
+        // Get friends' posts
+        $friendsPosts = Post::whereIn('user_id', $user->friends()->pluck('id'))->latest()->get();
+
+        return view('vibe.home', compact('friendsPosts'));
     }
 
     public function ShowProfile(){
